@@ -1,7 +1,6 @@
 const _ = require('lodash');
 
-const split = (obj) => [
-  `tell (split ${obj.type} with profile "${obj.profile}")`,
+const tellBody = (obj) => 
   _.compact([
     obj.rows ? `set rows to ${obj.rows}` : null,
     obj.columns ? `set columns to ${obj.columns}` : null,
@@ -12,7 +11,11 @@ const split = (obj) => [
       else if (obj.split) return split(obj.split);
       return [];
     })()
-  ]),
+  ]);
+
+const split = (obj) => [
+  `tell (split ${obj.type} with profile "${obj.profile}")`,
+  tellBody(obj),
   'end tell'
 ];
 
@@ -26,22 +29,23 @@ const indent = (arr, prefix = 0) =>
 const parse = (obj) => 
 `set dircommand to "cd ${process.cwd()}"
 
-tell application "iTerm"
-  activate
-  create window with profile "${obj.profile}"
-  tell current session of current window
-    set rows to ${obj.rows}
-    write text (dircommand as text)
-    write text "${obj.command}"
-${obj.split ? indent(obj.split.map(s => (split(s))), 2) : ''}
-  end tell
-${obj.fullscreen ?
-indent([
-	'tell application "System Events" to tell process "iTerm2"',
-  ['set value of attribute "AXFullScreen" of window 1 to true'],
-  'end tell'
-], 2) : '' }
-end tell
-`;
+${indent([
+  'tell application "iTerm"',
+  [
+    'activate',
+    `create window with profile "${obj.profile}"`,
+    'tell current session of current window',
+    tellBody(obj),
+    'end tell',
+  ],
+  'end tell',
+  ...(obj.fullscreen ? 
+    [
+      'tell application "System Events" to tell process "iTerm2"',
+      ['set value of attribute "AXFullScreen" of window 1 to true'],
+      'end tell'
+    ] : []
+  )
+])}`;
 
 module.exports = parse;

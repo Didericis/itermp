@@ -33,7 +33,7 @@ describe('parse', () => {
       }]
     }]
   });
-  subject('parse', () => parse($obj, $iterm));
+  subject('parse', () => parse($obj));
 
   it('creates the correct string', () => {
     expect($parse).to.include(`
@@ -66,9 +66,9 @@ tell application "iTerm"
       end tell
     end tell
   end tell
-  tell application "System Events" to tell process "iTerm2"
-    set value of attribute "AXFullScreen" of window 1 to true
-  end tell
+end tell
+tell application "System Events" to tell process "iTerm2"
+  set value of attribute "AXFullScreen" of window 1 to true
 end tell`
     );
   });
