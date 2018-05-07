@@ -1,0 +1,32 @@
+{
+  "fullscreen": true,
+  "profile": "Perdy",
+  "rows": 80,
+  "command": "vi",
+  "split": [{
+    "type": "horizontally",
+    "profile": "Perdy Gears",
+    "rows": 15,
+    "command": "npm run start:watch",
+    "split": {
+      "type": "vertically",
+      "profile": "Perdy Gears",
+      "command": "npm run styleguide",
+      "split": {
+        "type": "vertically",
+        "profile": "Perdy Gears",
+        "command": "npm run coverage"
+      }
+    }
+  },
+  {
+    "type": "vertically",
+    "profile": "Perdy Coffee",
+    "columns": 30,
+    "command": "npm run test:client:watch",
+    "split": {
+      "type": "horizontally",
+      "profile": "Perdy"
+    }
+  }]
+} 
