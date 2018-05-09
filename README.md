@@ -4,3 +4,8 @@ This project is very similar to [itermocil](https://github.com/TomAnthony/itermo
 ### Demo
 
 ![image](https://media.giphy.com/media/1zk6hML6QxUNAQ4l1j/giphy.gif)
+
+### TODO
+
+- [ ] Handle the absence of `itermproj.json` gracefully
+- [ ] Add ability to generate `itermproj.json` from templates
