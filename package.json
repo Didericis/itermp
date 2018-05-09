@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "",
   "dependencies": {
-    "applescript": "^1.0.0"
+    "applescript": "^1.0.0",
+    "commander": "^2.15.1"
   },
   "bin": {
     "itermproj": "bin/itermproj.js"
@@ -15,7 +16,7 @@
     "sinon": "^5.0.4"
   },
   "scripts": {
-    "test": "mocha -u bdd-lazy-var/global"
+    "test": "mocha -u bdd-lazy-var/global test/**/*.js"
   },
   "author": "",
   "license": "ISC"

@@ -48,4 +48,4 @@ ${indent([
   )
 ])}`;
 
-module.exports = parse;
+module.exports = { parse };

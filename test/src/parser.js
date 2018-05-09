@@ -1,5 +1,6 @@
 const { expect } = require('chai');
-const parse = require('../parse');
+
+const Parser = require('../../src/parser');
 
 describe('parse', () => {
   def('obj', {
@@ -33,7 +34,7 @@ describe('parse', () => {
       }]
     }]
   });
-  subject('parse', () => parse($obj));
+  subject('parse', () => Parser.parse($obj));
 
   it('creates the correct string', () => {
     expect($parse).to.include(`

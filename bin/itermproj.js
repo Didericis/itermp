@@ -1,10 +1,14 @@
 #! /usr/bin/env node
-const path = require('path');
-const applescript = require('applescript');
+const program = require('commander');
+const Main = require('../src/main');
+const version = require('../package.json').version;
 
-const parse = require('../parse');
-const conf = require(path.resolve(process.cwd(), './itermproj.json'));
+program
+  .version(version)
+  .option('-d, --debug', 'Print more verbose error logs')
+  .parse(process.argv);
 
-applescript.execString(parse(conf), (err) => {
-  if (err) console.error(err);
+Main.run().catch(e => {
+  if (program.debug) console.error(e);
+  process.exit(1);
 });
