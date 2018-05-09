@@ -9,3 +9,4 @@ This project is very similar to [itermocil](https://github.com/TomAnthony/itermo
 
 - [ ] Handle the absence of `itermproj.json` gracefully
 - [ ] Add ability to generate `itermproj.json` from templates
+- [ ] Add autocompletion
