@@ -103,11 +103,15 @@ const Main = {
   log: (m) => console.log(m),
 
   run: (name) => {
-    return ConfigLoader.load(name ? Main.getTemplatePath(name) : undefined).then(conf => {
-      applescript.execString(Parser.parse(conf), (err) => {
-        if (err) throw (err);
+    if (!name && !Main.localConfigExists()) {
+      return Main.listTemplates();
+    } else {
+      return ConfigLoader.load(name ? Main.getTemplatePath(name) : undefined).then(conf => {
+        applescript.execString(Parser.parse(conf), (err) => {
+          if (err) throw (err);
+        });
       });
-    })
+    }
   },
 
   saveTemplate: (name) =>
