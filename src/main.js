@@ -10,7 +10,6 @@ const ConfigLoader = require('../src/config_loader');
 const TEMPLATE_DIR = `${os.homedir()}/.itermproj`;
 const CONFIG_PATH = () => path.resolve(process.cwd(), 'itermproj.json');
 
-
 const Main = {
   copy: (src, dest) => fs.createReadStream(src).pipe(fs.createWriteStream(dest)),
 

@@ -1,11 +1,9 @@
 {
   "fullscreen": true,
   "rows": 180,
-  "command": "vi",
   "split": {
     "type": "vertically",
     "rows": 60,
-    "command": "npm run test -- --watch",
     "split": {
       "type": "horizontally",
       "profile": "Perdy"

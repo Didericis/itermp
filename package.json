@@ -16,6 +16,7 @@
     "sinon": "^5.0.4"
   },
   "scripts": {
+    "postinstall": "bin/init.js",
     "test": "mocha -u bdd-lazy-var/global test/**/*.js"
   },
   "author": "",
