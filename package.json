@@ -5,7 +5,8 @@
   "dependencies": {
     "applescript": "^1.0.0",
     "inquirer": "^5.2.0",
-    "lodash": "^4.17.10"
+    "lodash": "^4.17.10",
+    "yargs": "^11.0.0"
   },
   "bin": {
     "itermproj": "bin/itermproj.js"
