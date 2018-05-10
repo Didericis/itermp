@@ -13,11 +13,21 @@ const tellBody = (obj) =>
     })()
   ]);
 
-const split = (obj) => [
-  `tell (split ${obj.type} with profile "${obj.profile}")`,
-  tellBody(obj),
-  'end tell'
-];
+const checkForProfile = (obj) => {
+  if (!obj.profile) {
+    console.log('Missing profile option!');
+    throw new Error('Profile option is required');
+  }
+};
+
+const split = (obj) => {
+  checkForProfile(obj);
+  return [
+    `tell (split ${obj.type} with profile "${obj.profile}")`,
+    tellBody(obj),
+    'end tell'
+  ];
+}
 
 const indent = (arr, prefix = 0) =>
   arr.map((row) => {
@@ -26,8 +36,9 @@ const indent = (arr, prefix = 0) =>
     return pre + row;
   }).join('\n');
 
-const parse = (obj) => 
-`set dircommand to "cd ${process.cwd()}"
+const parse = (obj) => {
+  checkForProfile(obj);
+  return `set dircommand to "cd ${process.cwd()}"
 
 ${indent([
   'tell application "iTerm"',
@@ -47,5 +58,6 @@ ${indent([
     ] : []
   )
 ])}`;
+};
 
 module.exports = { parse };

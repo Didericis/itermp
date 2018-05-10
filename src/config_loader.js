@@ -1,18 +1,19 @@
 const path = require('path');
 const fs = require('fs');
 
-const load = () => 
+const DEFAULT_PATH = () => path.resolve(process.cwd(), './itermproj.json');
+
+const load = (configPath = DEFAULT_PATH()) => 
   new Promise((resolve, reject) => {
-    const itermProjPath = path.resolve(process.cwd(), './itermproj.json');
-    fs.readFile(itermProjPath, 'utf8', (err, file) => {
+    fs.readFile(configPath, 'utf8', (err, file) => {
       if (err) {
-        console.error('No itermproj.json found!');
+        console.error('Config not found!');
         reject(err);
       } else {
         try {
           resolve(JSON.parse(file));
         } catch(e) {
-          console.error('Invalid itermproj.json!');
+          console.error('Invalid config!');
           reject(e);
         }
       }

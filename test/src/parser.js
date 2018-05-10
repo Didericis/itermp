@@ -2,42 +2,43 @@ const { expect } = require('chai');
 
 const Parser = require('../../src/parser');
 
-describe('parse', () => {
-  def('obj', {
-    fullscreen: true,
-    rows: 80,
-    profile: 'Perdy',
-    command: 'vi',
-    split: [{
-      type: 'horizontally',
-      profile: 'Perdy Gear',
-      rows: 15,
-      command: 'npm run start:watch',
-      split: {
-        type: 'vertically',
+describe('Parser', () => {
+  describe('.parse()', () => {
+    def('obj', {
+      fullscreen: true,
+      rows: 80,
+      profile: 'Perdy',
+      command: 'vi',
+      split: [{
+        type: 'horizontally',
         profile: 'Perdy Gear',
-        command: 'npm run styleguide',
+        rows: 15,
+        command: 'npm run start:watch',
         split: {
           type: 'vertically',
           profile: 'Perdy Gear',
-          command: 'npm run coverage',
+          command: 'npm run styleguide',
+          split: {
+            type: 'vertically',
+            profile: 'Perdy Gear',
+            command: 'npm run coverage',
+          }
         }
-      }
-    }, {
-      type: 'vertically',
-      profile: 'Perdy Coffee',
-      columns: 30,
-      command: 'npm run test:client:watch',
-      split: [{
-        type: 'horizontally',
-        profile: 'Perdy',
+      }, {
+        type: 'vertically',
+        profile: 'Perdy Coffee',
+        columns: 30,
+        command: 'npm run test:client:watch',
+        split: [{
+          type: 'horizontally',
+          profile: 'Perdy',
+        }]
       }]
-    }]
-  });
-  subject('parse', () => Parser.parse($obj));
+    });
+    subject('parse', () => Parser.parse($obj));
 
-  it('creates the correct string', () => {
-    expect($parse).to.include(`
+    it('creates the correct string', () => {
+      expect($parse).to.include(`
 tell application "iTerm"
   activate
   create window with profile "Perdy"
@@ -71,6 +72,7 @@ end tell
 tell application "System Events" to tell process "iTerm2"
   set value of attribute "AXFullScreen" of window 1 to true
 end tell`
-    );
+      );
+    });
   });
 });
