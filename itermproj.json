@@ -5,8 +5,7 @@
     "type": "vertically",
     "rows": 60,
     "split": {
-      "type": "horizontally",
-      "profile": "Perdy"
+      "type": "horizontally"
     }
   }
 } 

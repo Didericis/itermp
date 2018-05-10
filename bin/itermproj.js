@@ -7,6 +7,8 @@ const os = require('os');
 const fs = require('fs');
 
 const argv = require('yargs')
+  .usage('$0', 'launch a local itermproj configuration')
+  .usage('$0 [template]', 'launch the itermproj configuration template')
   .options({ 
     delete: { 
       describe: 'Delete pane configuration',
