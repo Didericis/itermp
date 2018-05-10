@@ -10,6 +10,21 @@
   "bin": {
     "itermproj": "bin/itermproj.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Didericis/itermproj.git"
+  },
+  "keywords": [
+    "iterm",
+    "iterm2",
+    "itermocil",
+    "automation",
+    "osx",
+    "utility",
+    "cli",
+    "configuration",
+    "arragment"
+  ],
   "devDependencies": {
     "bdd-lazy-var": "^2.2.3",
     "chai": "^4.1.2",
@@ -20,6 +35,6 @@
     "postinstall": "bin/init.js",
     "test": "mocha -u bdd-lazy-var/global test/**/*.js"
   },
-  "author": "",
+  "author": "didericis",
   "license": "ISC"
 }
