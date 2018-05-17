@@ -1,5 +1,5 @@
 # itermproj
-This project is intended for heavy iterm users that want have project specific pane configurations. It's very similar to [itermocil](https://github.com/TomAnthony/itermocil), but offers more flexibility. Features include:
+This project is intended for iterm users that want project specific pane configurations. It's very similar to [itermocil](https://github.com/TomAnthony/itermocil), but offers more flexibility. Features include:
 
   - Local, project specific configurations
   - Ability to create arbitrary pane arrangements
