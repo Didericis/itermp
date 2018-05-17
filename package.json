@@ -30,11 +30,13 @@
     "bdd-lazy-var": "^2.2.3",
     "chai": "^4.1.2",
     "mocha": "^5.1.1",
+    "nyc": "^11.8.0",
     "sinon": "^5.0.4"
   },
   "scripts": {
     "postinstall": "bin/init.js",
-    "test": "mocha -u bdd-lazy-var/global test/**/*.js"
+    "report": "nyc report --reporter=html",
+    "test": "nyc mocha -u bdd-lazy-var/global test/**/*.js" 
   },
   "author": "didericis",
   "license": "ISC"

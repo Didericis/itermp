@@ -74,5 +74,20 @@ tell application "System Events" to tell process "iTerm2"
 end tell`
       );
     });
+
+    context('when given an empty object', () => {
+      def('obj', {});
+      it('uses the correct defaults', () => {
+        expect($parse).to.include(`
+tell application "iTerm"
+  activate
+  create window with default profile
+  tell current session of current window
+    write text (dircommand as text)
+  end tell
+end tell`
+        );
+      });
+    });
   });
 });
