@@ -1,3 +1,4 @@
+<a href="https://codeclimate.com/github/Didericis/itermproj/maintainability"><img src="https://api.codeclimate.com/v1/badges/f04fc0e128b4c26fb190/maintainability" /></a> <a href="https://codeclimate.com/github/Didericis/itermproj/test_coverage"><img src="https://api.codeclimate.com/v1/badges/f04fc0e128b4c26fb190/test_coverage" /></a> [![CircleCI](https://circleci.com/gh/Didericis/itermproj.svg?style=svg)](https://circleci.com/gh/Didericis/itermproj)
 # itermproj
 This project is intended for iterm users that want project specific pane configurations. It's very similar to [itermocil](https://github.com/TomAnthony/itermocil), but offers more flexibility. Features include:
 
