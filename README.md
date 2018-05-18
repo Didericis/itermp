@@ -1,5 +1,5 @@
 <a href="https://codeclimate.com/github/Didericis/itermproj/maintainability"><img src="https://api.codeclimate.com/v1/badges/f04fc0e128b4c26fb190/maintainability" /></a> <a href="https://codeclimate.com/github/Didericis/itermproj/test_coverage"><img src="https://api.codeclimate.com/v1/badges/f04fc0e128b4c26fb190/test_coverage" /></a> [![CircleCI](https://circleci.com/gh/Didericis/itermproj.svg?style=svg)](https://circleci.com/gh/Didericis/itermproj)
-# itermproj
+# itermp
 This project is intended for iterm users that want project specific pane configurations. It's very similar to [itermocil](https://github.com/TomAnthony/itermocil), but offers more flexibility. Features include:
 
   - Local, project specific configurations
@@ -10,12 +10,12 @@ This project is intended for iterm users that want project specific pane configu
 ### Installation
 
 ```
-npm install -g itermproj
+npm install -g itermp
 ```
 
 ### Configuration options
 
-`./itermproj.json`
+`./itermp.json`
 ```js
 {
   "fullscreen": true,                    // makes iTerm window fullscreen
@@ -35,7 +35,7 @@ npm install -g itermproj
 ![image](https://media.giphy.com/media/1zk6hML6QxUNAQ4l1j/giphy.gif)
 
 
-`./itermproj.json`
+`./itermp.json`
 ```js
 {
   "fullscreen": true,
@@ -77,16 +77,16 @@ npm install -g itermproj
 
 ```
 Commands:
-  itermproj                launch a local itermproj configuration
-  itermproj <template>     launch the itermproj configuration template [default]
-  itermproj completion     generate bash completion script
+  itermp completion     generate bash completion script
+  itermp help           show help
+  itermp [template]     run itermproj                            [default]
 
 Options:
-  --version     Show version number                                    [boolean]
-  --delete, -d  Delete pane configuration
-  --save, -s    Save pane configuration to local itermproj.json
-  --list, -l    List available pane configurations
-  --create, -c  Create pane configuration template from local itermproj.json
-  --debug, -d   Emit more verbose errors
-  -h, --help    Show help                                              [boolean]
+  -c, --create   Create pane configuration template from local itermproj.json
+  -d, --debug    Emit more verbose errors
+  -h, --help     Show help                                             [boolean]
+  -l, --list     List available pane configurations
+  -r, --remove   Remove pane configuration
+  -s, --save     Save pane configuration to local itermproj.json
+  -v, --version  Show version number                                   [boolean]
 ```

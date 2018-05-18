@@ -1,5 +1,5 @@
 {
-  "name": "itermproj",
+  "name": "itermp",
   "version": "1.0.0",
   "description": "",
   "dependencies": {
@@ -9,11 +9,11 @@
     "yargs": "^11.0.0"
   },
   "bin": {
-    "itermproj": "bin/itermproj.js"
+    "itermp": "bin/itermp.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Didericis/itermproj.git"
+    "url": "git+https://github.com/Didericis/itermp.git"
   },
   "keywords": [
     "iterm",

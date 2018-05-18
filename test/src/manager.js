@@ -24,7 +24,7 @@ describe('Manager', () => {
     });
 
     it('gets set to the correct path', () => {
-      expect($subject).to.eql(`${$cwd}/itermproj.json`);
+      expect($subject).to.eql(`${$cwd}/itermp.json`);
     });
   });
 
@@ -72,7 +72,7 @@ describe('Manager', () => {
     it('emits the correct log', () => {
       $subject;
       expect(
-        $manager.log.calledWith("'asdf' saved to ./itermproj.json")
+        $manager.log.calledWith("'asdf' saved to ./itermp.json")
       ).to.be.true;
     });
   });
@@ -135,7 +135,7 @@ describe('Manager', () => {
     });
 
     it('gets set to the correct path', () => {
-      expect($subject).to.eql(`${$homedir}/.itermproj`);
+      expect($subject).to.eql(`${$homedir}/.itermp`);
     });
   });
 
@@ -232,9 +232,9 @@ describe('Manager', () => {
     context('when no name is given', () => {
       def('name', undefined);
 
-      it('reads itermproj.json from the current working directory', () => $subject.then(() => {
+      it('reads itermp.json from the current working directory', () => $subject.then(() => {
         expect(fs.readFile.called).to.be.true;
-        expect(fs.readFile.args[0][0]).to.eql(`${$cwd}/itermproj.json`);
+        expect(fs.readFile.args[0][0]).to.eql(`${$cwd}/itermp.json`);
       }));
     });
 

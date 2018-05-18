@@ -5,8 +5,8 @@ const path = require('path');
 class Manager {
   constructor(log = console.log) {
     this.log = log;
-    this.localConfigPath = path.resolve('itermproj.json');
-    this.templateDir = path.resolve(os.homedir(), '.itermproj')
+    this.localConfigPath = path.resolve('itermp.json');
+    this.templateDir = path.resolve(os.homedir(), '.itermp')
   }
 
   copy(src, dest) {
@@ -15,7 +15,7 @@ class Manager {
 
   copyTemplateToLocalConfig(name) {
     this.copy(this.getTemplatePath(name), this.localConfigPath);
-    this.log(`'${name}' saved to ./itermproj.json`);
+    this.log(`'${name}' saved to ./itermp.json`);
   }
 
   createTemplateFromLocalConfig(name) {
