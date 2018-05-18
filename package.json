@@ -36,7 +36,7 @@
   "scripts": {
     "postinstall": "bin/init.js",
     "report": "nyc report --reporter=html",
-    "test": "nyc mocha -u bdd-lazy-var/global test/**/*.js" 
+    "test": "nyc --reporter=lcov mocha -u bdd-lazy-var/global test/**/*.js" 
   },
   "author": "didericis",
   "license": "ISC"
