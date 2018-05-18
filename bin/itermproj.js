@@ -19,7 +19,7 @@ const argv = yargs
     save: { describe: 'Save pane configuration to local itermproj.json' },
   })
   .completion('completion', (currWord, argv) => {
-    return manager.getAllTemplates().then(templates => templates.concat('completion'));
+    return manager.getAllTemplates().then(templates => templates.concat(['completion', 'help']));
   })
   .command('help', 'show help')
   .command('$0 [template]', 'run itermproj', () => {}, (argv) => {
