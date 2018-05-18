@@ -8,7 +8,7 @@ const Parser = require('../src/parser');
 const Manager = require('../src/manager');
 
 class UserActions {
-  constructor(log = console.log) {
+  constructor(log) {
     this.manager = new Manager(log);
   }
 

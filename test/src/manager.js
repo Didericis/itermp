@@ -195,11 +195,61 @@ describe('Manager', () => {
 
   describe('#getTemplatePath()', () => {
     def('name', 'cool-name');
-
     subject(() => $manager.getTemplatePath($name));
 
     it('returns the correct path', () => {
       expect($subject).to.eql(`${$manager.templateDir}/${$name}.json`);
+    });
+  });
+
+  describe('#init()', () => {
+    def('basicTemplateExists', false);
+    def('templateDirExists', false);
+    subject(() => $manager.init());
+
+    beforeEach(() => {
+      sinon.stub(fs, 'existsSync').returns($templateDirExists);
+      sinon.stub($manager, 'templateExists').returns($basicTemplateExists);
+      sinon.stub($manager, 'copy');
+      sinon.stub(fs, 'mkdirSync');
+    });
+
+    context('when the template dir does not exist', () => {
+      def('templateDirExists', false);
+
+      it('creates the template dir', () => {
+        $subject;
+        expect(fs.mkdirSync.called).to.be.true;
+      });
+    });
+
+    context('when the template dir exists', () => {
+      def('templateDirExists', true);
+
+      it('does not create the template dir', () => {
+        $subject;
+        expect(fs.mkdirSync.called).to.be.false;
+      });
+    });
+
+    context('when the basic template exists', () => {
+      def('basicTemplateExists', true);
+
+      it('does not copy the basic template', () => {
+        $subject;
+        expect($manager.copy.called).to.be.false;
+      });
+    });
+
+    context('when the basic template does not exist', () => {
+      def('basicTemplateExists', false);
+
+      it('copies the basic template', () => {
+        $subject;
+        expect($manager.copy.called).to.be.true;
+        expect($manager.copy.args[0][0]).to.include('basic');
+        expect($manager.copy.args[0][1]).to.include('basic');
+      });
     });
   });
 

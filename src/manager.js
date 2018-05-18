@@ -49,6 +49,19 @@ class Manager {
     return path.resolve(this.templateDir, `${name}.json`);
   }
 
+  init() {
+    if (!fs.existsSync(this.templateDir)) {
+      fs.mkdirSync(this.templateDir);
+      this.log(`Created "${this.templateDir}"`);
+    }
+
+    if (!this.templateExists('basic')) {
+      const basicPath = path.resolve(__dirname, '../templates/basic.json');
+      this.copy(basicPath, this.getTemplatePath('basic'));
+      this.log('Created "basic" template');
+    }
+  }
+
   loadConfig(name) {
     const configPath = name ? this.getTemplatePath(name) : this.localConfigPath;
     return new Promise((resolve, reject) => {
