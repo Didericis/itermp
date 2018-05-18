@@ -18,6 +18,7 @@ describe('UserActions', () => {
 
   beforeEach(() => {
     sinon.stub(inquirer, 'prompt').returns(Promise.resolve($promptResults));
+    sinon.stub(console, 'error');
     $userActions.manager = sinon.createStubInstance(Manager);
   });
 
@@ -26,7 +27,20 @@ describe('UserActions', () => {
   });
 
   describe('#createTemplate()', () => {
+    def('localConfigExists', true);
     subject(() => $userActions.createTemplate($name));
+
+    beforeEach(() => {
+      $manager.localConfigExists.returns($localConfigExists);
+    });
+
+    context('when the local config does not exist', () => {
+      def('localConfigExists', false);
+
+      it('emits a console error', () => $subject.then(() => {
+        expect(console.error.called).to.be.true;
+      }));
+    });
 
     context('when not given a name', () => {
       def('name', undefined);
@@ -314,11 +328,13 @@ describe('UserActions', () => {
   describe('#saveTemplate()', () => {
     def('localConfigExists', false);
     def('name', 'asdf');
+    def('templateExists', true);
 
     subject('saveTemplate', () => $userActions.saveTemplate($name));
 
     beforeEach(() => {
       $manager.localConfigExists.returns($localConfigExists);
+      $manager.templateExists.returns($templateExists);
       inquirer.prompt.returns(Promise.resolve({ overwrite: $overwrite }));
     });
 
@@ -332,6 +348,14 @@ describe('UserActions', () => {
 
     context('when there is a local config', () => {
       def('localConfigExists', true);
+
+      context('and the template does not exist', () => {
+        def('templateExists', false);
+
+        it('logs an error', () => $subject.then(() => {
+          expect(console.error.called).to.be.true;
+        }));
+      });
 
       it('prompts the user for confirmation', () => $subject.then(() => {
         expect(inquirer.prompt.called).to.be.true;
@@ -355,24 +379,6 @@ describe('UserActions', () => {
         it('does not copy the template', () => $subject.then(() => {
           expect($manager.copyTemplateToLocalConfig.called).to.be.false;
         }));
-      });
-    });
-  });
-
-  describe('#log()', () => {
-    context('when a logger is given', () => {
-      def('log', () => sinon.stub());
-
-      it('uses the given logger', () => {
-        expect($subject.log).to.equal($log);
-      });
-    });
-
-    context('when no logger is given', () => {
-      def('log', () => undefined);
-
-      it('uses console.log', () => {
-        expect($subject.log).to.equal(console.log);
       });
     });
   });

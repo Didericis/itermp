@@ -9,11 +9,14 @@ const Manager = require('../src/manager');
 
 class UserActions {
   constructor(log = console.log) {
-    this.log = log;
     this.manager = new Manager(log);
   }
 
   createTemplate(name) {
+    if (!this.manager.localConfigExists()) {
+      console.error('No local config exists!');
+      return Promise.resolve();
+    }
     return (name ? 
       Promise.resolve(name) :
       inquirer.prompt([{
@@ -36,7 +39,7 @@ class UserActions {
 
   deleteTemplate(name) {
     if (!this.manager.templateExists(name)) {
-      this.log(`No template named '${name}' exists!`);
+      console.error(`No template named '${name}' exists!`);
       return Promise.resolve();
     }
     return inquirer.prompt([{
@@ -89,6 +92,10 @@ class UserActions {
   }
 
   saveTemplate(name) {
+    if (!this.manager.templateExists(name)) {
+      console.error(`Template '${name}' does not exist!`);
+      return Promise.resolve();
+    } 
     return (this.manager.localConfigExists() ?
       inquirer.prompt([{
         type: 'confirm',

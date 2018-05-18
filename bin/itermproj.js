@@ -1,69 +1,55 @@
 #! /usr/bin/env node
-const UserActions = require('../src/user_actions');
-const version = require('../package.json').version;
-
 const inquirer = require('inquirer');
 const os = require('os');
 const fs = require('fs');
+const yargs = require('yargs');
+
+const UserActions = require('../src/user_actions');
+const Manager = require('../src/manager');
 
 const userActions = new UserActions();
+const manager = new Manager();
 
-const argv = require('yargs')
-  .usage('$0', 'launch a local itermproj configuration')
+const argv = yargs
   .options({ 
-    delete: { 
-      describe: 'Delete pane configuration',
-      alias: 'd'
-    }
-  })
-  .options({ 
-    save: { 
-      describe: 'Save pane configuration to local itermproj.json',
-      alias: 's'
-    }
-  })
-  .options({ 
-    list: { 
-      describe: 'List available pane configurations',
-      alias: 'l'
-    }
-  })
-  .options({ 
-    create: { 
-      describe: 'Create pane configuration template from local itermproj.json',
-      alias: 'c'
-    }
-  })
-  .options({ 
-    debug: { 
-      describe: 'Emit more verbose errors',
-      alias: 'd'
-    }
+    create: { describe: 'Create pane configuration template from local itermproj.json' },
+    debug: { describe: 'Emit more verbose errors' },
+    list: { describe: 'List available pane configurations' },
+    remove: { describe: 'Remove pane configuration' },
+    save: { describe: 'Save pane configuration to local itermproj.json' },
   })
   .completion('completion', (currWord, argv) => {
-    return Main.getTemplates();
+    return manager.getAllTemplates().then(templates => templates.concat('completion'));
   })
-  .help('help')
+  .command('help', 'show help')
+  .command('$0 [template]', 'run itermproj', () => {}, (argv) => {
+    if (argv.remove) {
+      userActions.deleteTemplate(argv.remove);
+    } else if (argv.create) {
+      userActions.createTemplate(typeof argv.create === 'string' ? argv.create : undefined);
+    } else if (argv.save) {
+      if (argv.save === true) console.error('Saving requires a template name!');
+      else userActions.saveTemplate(argv.save);
+    } else if (argv.list) {
+      userActions.listTemplates();
+    } else if (['completion'].includes(argv.template)) {
+      yargs.showCompletionScript();
+    } else {
+      userActions.run(argv.template).catch(e => {
+        if (argv.debug) console.error(e);
+        process.exit(1);
+      });
+    }
+  })
+  .alias('c', 'create')
+  .alias('d', 'debug')
   .alias('h', 'help')
+  .alias('l', 'list')
+  .alias('r', 'remove')
+  .alias('s', 'save')
+  .alias('v', 'version')
+  .help('help')
   .argv
 
-const parseArg = (name) => (
-  argv._[0] || 
-  (typeof argv[name] === 'string' ? argv[name] : undefined)
-);
 
-if (argv.delete) {
-  userActions.deleteTemplate(parseArg('delete'));
-} else if (argv.create) {
-  userActions.createTemplate(parseArg('create'));
-} else if (argv.save) {
-  userActions.saveTemplate(parseArg('save'));
-} else if (argv.list) {
-  userActions.listTemplates();
-} else {
-  userActions.run(argv._[0]).catch(e => {
-    if (argv.debug) console.error(e);
-    process.exit(1);
-  });
-}
 
