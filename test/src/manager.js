@@ -23,7 +23,7 @@ describe('Manager', () => {
       sinon.stub(process, 'cwd').returns($cwd);
     });
 
-    it('gets set the right path', () => {
+    it('gets set to the correct path', () => {
       expect($subject).to.eql(`${$cwd}/itermproj.json`);
     });
   });
@@ -88,7 +88,7 @@ describe('Manager', () => {
       sinon.stub($manager, 'copy');
     });
 
-    it('copies the local config to the template', () => {
+    it('creates a template from the local config', () => {
       $subject;
       expect($manager.getTemplatePath.calledWith($name)).to.be.true;
       expect($manager.copy.calledWith(
@@ -99,7 +99,7 @@ describe('Manager', () => {
 
     it('emits the correct log', () => {
       $subject;
-      expect($manager.log.calledWith('Template created!')).to.be.true;
+      expect($manager.log.calledWith(`Template '${$name}' created!`)).to.be.true;
     });
   });
 
@@ -114,14 +114,14 @@ describe('Manager', () => {
       sinon.stub(fs, 'unlinkSync');
     });
 
-    it('delets the template', () => {
+    it('deletes the template', () => {
       $subject;
       expect(fs.unlinkSync.calledWith($templatePath)).to.be.true;
     });
 
     it('emits the correct log', () => {
       $subject;
-      expect($manager.log.calledWith('Template deleted!')).to.be.true;
+      expect($manager.log.calledWith(`Template '${$name}' deleted!`)).to.be.true;
     });
   });
 
@@ -134,7 +134,7 @@ describe('Manager', () => {
       sinon.stub(os, 'homedir').returns($homedir);
     });
 
-    it('sets the right path', () => {
+    it('gets set to the correct path', () => {
       expect($subject).to.eql(`${$homedir}/.itermproj`);
     });
   });
@@ -150,7 +150,7 @@ describe('Manager', () => {
       sinon.stub($manager, 'getTemplatePath').returns($path);
     });
 
-    it('checks if the template templateExists', () => {
+    it('checks if the template exists', () => {
       $subject;
       expect($manager.getTemplatePath.calledWith($name)).to.be.true;
       expect(fs.existsSync.calledWith($path)).to.be.true;
@@ -164,7 +164,7 @@ describe('Manager', () => {
       sinon.stub(fs, 'readdir');
     });
 
-    context('if there is a problem reading the files', () => {
+    context('when there is a problem reading the files', () => {
       def('err', new Error('oopsies'));
 
       beforeEach(() => {
@@ -178,14 +178,14 @@ describe('Manager', () => {
       }));
     });
 
-    context('if there is no problem reading the files', () => {
+    context('when there is no problem reading the files', () => {
       def('files', ['/hi/there/file1.json', '/hi/there/unexpected.something']);
 
       beforeEach(() => {
         fs.readdir.callsArgWith(1, null, $files);
       });
 
-      it('resolves with all the correct files', () => $subject.then((files) => {
+      it('resolves with all the json file names', () => $subject.then((files) => {
         expect(files).to.eql([
           'file1'
         ]);
@@ -210,35 +210,52 @@ describe('Manager', () => {
       sinon.stub(fs, 'existsSync');
     });
 
-    it('performs the correct check', () => {
+    it('checks that there is a file at localConfigPath', () => {
       $subject;
       expect(fs.existsSync.calledWith($manager.localConfigPath)).to.be.true;
     });
   });
 
 
-  describe('#loadLocalConfig()', () => {
+  describe('#loadConfig()', () => {
     def('cwd', '/cool/place');
     def('fileContents', '{}');
-    subject(() => $manager.loadLocalConfig());
+    def('fileError', null);
+    def('name', undefined);
+    subject(() => $manager.loadConfig($name));
 
     beforeEach(() => {
       sinon.stub(process, 'cwd').returns($cwd);
-      sinon.stub(fs, 'readFile').callsArgWith(2, null, $fileContents);
+      sinon.stub(fs, 'readFile').callsArgWith(2, $fileError, $fileContents);
     });
 
-    it('reads itermproj.json from the current working directory', () => $subject.then(() => {
-      expect(fs.readFile.called).to.be.true;
-      expect(fs.readFile.args[0][0]).to.eql(`${$cwd}/itermproj.json`);
-    }));
+    context('when no name is given', () => {
+      def('name', undefined);
 
-    context('when the file templateExists', () => {
-      beforeEach(() => {
-        sinon.stub(console, 'error');
-      });
+      it('reads itermproj.json from the current working directory', () => $subject.then(() => {
+        expect(fs.readFile.called).to.be.true;
+        expect(fs.readFile.args[0][0]).to.eql(`${$cwd}/itermproj.json`);
+      }));
+    });
+
+    context('when a name is given', () => {
+      def('name', 'thingy');
+
+      it('reads from the template', () => $subject.then(() => {
+        expect(fs.readFile.called).to.be.true;
+        expect(fs.readFile.args[0][0]).to.eql(`${$manager.templateDir}/${$name}.json`);
+      }));
+    });
+
+    context('when the file exists', () => {
+      def('fileError', null);
 
       context('and is invalid json', () => {
         def('fileContents', '{ "asdf": asdf },');
+
+        beforeEach(() => {
+          sinon.stub(console, 'error');
+        });
 
         it('emits a user friendly console error', () => $subject.then(() => {
           expect(true, 'Promise resolved unexpectedly').to.be.false;
@@ -251,6 +268,7 @@ describe('Manager', () => {
 
       context('and is valid json', () => {
         def('fileContents', '{ "asdf": "asdf" }');
+
         it('returns the contents as an object', () => $subject.then((conf) => {
           expect(conf).to.eql({ asdf: 'asdf' });
         }));
@@ -259,6 +277,7 @@ describe('Manager', () => {
 
     context('when the file does not exist', () => {
       def('readFileError', () => new Error('oopsie'));
+
       beforeEach(() => {
         fs.readFile.callsArgWith(2, $readFileError);
         sinon.stub(console, 'error');

@@ -1,10 +1,12 @@
 #! /usr/bin/env node
-const Main = require('../src/main');
+const UserActions = require('../src/user_actions');
 const version = require('../package.json').version;
 
 const inquirer = require('inquirer');
 const os = require('os');
 const fs = require('fs');
+
+const userActions = new UserActions();
 
 const argv = require('yargs')
   .usage('$0', 'launch a local itermproj configuration')
@@ -45,22 +47,21 @@ const argv = require('yargs')
   .alias('h', 'help')
   .argv
 
+const parseArg = (name) => (
+  argv._[0] || 
+  (typeof argv[name] === 'string' ? argv[name] : undefined)
+);
+
 if (argv.delete) {
-  Main.deleteTemplate(argv.delete);
+  userActions.deleteTemplate(parseArg('delete'));
 } else if (argv.create) {
-  Main.createTemplate(
-    argv._[0] || 
-    (typeof argv.create === 'string' ? argv.create : undefined)
-  );
+  userActions.createTemplate(parseArg('create'));
 } else if (argv.save) {
-  Main.saveTemplate(
-    argv._[0] || 
-    (typeof argv.save === 'string' ? argv.save : undefined)
-  );
+  userActions.saveTemplate(parseArg('save'));
 } else if (argv.list) {
-  Main.listTemplates();
+  userActions.listTemplates();
 } else {
-  Main.run(argv._[0]).catch(e => {
+  userActions.run(argv._[0]).catch(e => {
     if (argv.debug) console.error(e);
     process.exit(1);
   });

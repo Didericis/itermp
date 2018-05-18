@@ -20,12 +20,12 @@ class Manager {
 
   createTemplateFromLocalConfig(name) {
     this.copy(this.localConfigPath, this.getTemplatePath(name));
-    this.log('Template created!');
+    this.log(`Template '${name}' created!`);
   }
 
   deleteTemplate(name) {
     fs.unlinkSync(this.getTemplatePath(name));
-    this.log('Template deleted!');
+    this.log(`Template '${name}' deleted!`);
   }
 
   templateExists(name) {
@@ -49,9 +49,10 @@ class Manager {
     return path.resolve(this.templateDir, `${name}.json`);
   }
 
-  loadLocalConfig() {
+  loadConfig(name) {
+    const configPath = name ? this.getTemplatePath(name) : this.localConfigPath;
     return new Promise((resolve, reject) => {
-      fs.readFile(this.localConfigPath, 'utf8', (err, file) => {
+      fs.readFile(configPath, 'utf8', (err, file) => {
         if (err) {
           console.error('Config not found!');
           reject(err);

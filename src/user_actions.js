@@ -22,15 +22,15 @@ class UserActions {
         name: 'template'
       }]).then(({ template }) => template)
     ).then(template => {
-      if (!this.manager.templateExists(template)) return template;
+      if (!this.manager.templateExists(name)) return template;
       return inquirer.prompt([{
         type: 'confirm',
-        message: 'A template by that already templateExists. Overwrite?',
+        message: 'A template by that already exists. Overwrite?',
         name: 'overwrite'
       }]).then(({ overwrite }) => overwrite ? template : null);
     }).then(template => {
       if (!template) return;
-      this.manager.copyTemplateToLocalConfig(template);
+      this.manager.createTemplateFromLocalConfig(template);
     });
   }
 
@@ -41,7 +41,7 @@ class UserActions {
     }
     return inquirer.prompt([{
       type: 'confirm',
-      message: 'Are you sure?',
+      message: `Delete the '${name}' template?`,
       name: 'del'
     }]).then(({ del }) => {
       if (!del) return;
@@ -80,8 +80,7 @@ class UserActions {
     if (!name && !this.manager.localConfigExists()) {
       return this.listTemplates();
     } else {
-      return this.manager.loadLocalConfig(
-        name ? this.manager.getTemplatePath(name) : undefined).then(conf => {
+      return this.manager.loadConfig(name).then(conf => {
         applescript.execString(Parser.parse(conf), (err) => {
           if (err) throw (err);
         });

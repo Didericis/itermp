@@ -46,7 +46,7 @@ describe('UserActions', () => {
     context('when given a name', () => {
       def('name', 'stuff');
 
-      context('and the template templateExists', () => {
+      context('and the template exists', () => {
         def('overwrite', true);
         beforeEach(() => {
           inquirer.prompt.returns(Promise.resolve({ overwrite: $overwrite }));
@@ -62,15 +62,15 @@ describe('UserActions', () => {
 
         context('and the user confirms overwriting the template', () => {
           def('overwrite', true);
-          it('copies the template', () => $subject.then(() => {
-            expect($manager.copyTemplateToLocalConfig.calledWith($name)).to.be.true;
+          it('creates the template from a local config', () => $subject.then(() => {
+            expect($manager.createTemplateFromLocalConfig.calledWith($name)).to.be.true;
           }));
         });
 
         context('and the user does not confirm overwriting the template', () => {
           def('overwrite', false);
           it('does not copy the template', () => $subject.then(() => {
-            expect($manager.copyTemplateToLocalConfig.called).to.be.false;
+            expect($manager.createTemplateFromLocalConfig.called).to.be.false;
           }));
         });
       });
@@ -91,7 +91,7 @@ describe('UserActions', () => {
       }));
     });
 
-    context('when the template templateExists', () => {
+    context('when the template exists', () => {
       def('del', false);
       beforeEach(() => {
         $manager.templateExists.returns(true);
@@ -162,7 +162,7 @@ describe('UserActions', () => {
           sinon.stub($userActions, 'deleteTemplate').returns(Promise.resolve($deleteTemplateResult));
         });
         
-        it('calls and returns deleteTemplate result', () => $subject.then((result) => {
+        it('calls deleteTemplate and returns the result', () => $subject.then((result) => {
           expect($userActions.deleteTemplate.calledWith('my-template')).to.be.true;
           expect(result).to.eql($deleteTemplateResult);
         }));
@@ -179,7 +179,7 @@ describe('UserActions', () => {
           sinon.stub($userActions, 'run').returns(Promise.resolve($runResult));
         });
         
-        it('calls and returns run result', () => $subject.then((result) => {
+        it('calls run and returns the result', () => $subject.then((result) => {
           expect($userActions.run.calledWith('my-template')).to.be.true;
           expect(result).to.eql($runResult);
         }));
@@ -196,7 +196,7 @@ describe('UserActions', () => {
           sinon.stub($userActions, 'saveTemplate').returns(Promise.resolve($saveTemplateResult));
         });
         
-        it('calls and returns saveTemplate result', () => $subject.then((result) => {
+        it('calls saveTemplate and returns the result', () => $subject.then((result) => {
           expect($userActions.saveTemplate.calledWith('my-template')).to.be.true;
           expect(result).to.eql($saveTemplateResult);
         }));
@@ -218,11 +218,17 @@ describe('UserActions', () => {
     });
 
     const itBehavesLikeAConfigRunner = () => {
+      it('loads the correct config', () => {
+        $manager.loadConfig.returns(Promise.resolve());
+        $subject;
+        expect($manager.loadConfig.calledWith($name)).to.be.true;
+      });
+
       context('and the config loads', () => {
         def('config', {});
 
         beforeEach(() => {
-          $manager.loadLocalConfig.returns(Promise.resolve($config));
+          $manager.loadConfig.returns(Promise.resolve($config));
         });
 
         it('parses the config and executes the result', () => $subject.then(() => {
@@ -258,13 +264,13 @@ describe('UserActions', () => {
       });
 
       context('and the config does not load', () => {
-        def('loadErr', new Error('Bad load'));
+        def('loadErr', () => new Error('Load error'));
 
         beforeEach(() => {
-          $manager.loadLocalConfig.returns(Promise.reject($loadErr));
+          $manager.loadConfig.returns(Promise.reject($loadErr));
         });
 
-        it('rejects the config error', () => $subject.then(() => {
+        it('rejects with the correct error', () => $subject.then(() => {
           expect(true, 'Expected to reject').to.be.false;
         }).catch(e => {
           expect(e).to.eql($loadErr);
@@ -272,7 +278,7 @@ describe('UserActions', () => {
       });
     };
 
-    context('when not given a name', () => {
+    context('when no name is given', () => {
       def('name', undefined);
 
       context('and a local config does not exist', () => {
@@ -283,9 +289,13 @@ describe('UserActions', () => {
         it('lists the templates', () => $subject.then(() => {
           expect($subject).to.eql($listTemplatesPromise);
         }));
+
+        it('does not load a config', () => $subject.then(() => {
+          expect($manager.loadConfig.called).to.be.false;
+        }));
       });
 
-      context('and a local config templateExists', () => {
+      context('and a local config exists', () => {
         beforeEach(() => {
           $manager.localConfigExists.returns(true);
         });
@@ -312,7 +322,7 @@ describe('UserActions', () => {
       inquirer.prompt.returns(Promise.resolve({ overwrite: $overwrite }));
     });
 
-    context('when tere is not a local config', () => {
+    context('when there is not a local config', () => {
       def('localConfigExists', false);
 
       it('copies the template', () => $subject.then(() => {
