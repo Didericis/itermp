@@ -1,5 +1,6 @@
 # itermp
 
+[![NPM Version](https://badge.fury.io/js/itermp.svg)](https://badge.fury.io/js/itermp)
 [![Maintainability](https://api.codeclimate.com/v1/badges/f04fc0e128b4c26fb190/maintainability)](https://codeclimate.com/github/Didericis/itermproj/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f04fc0e128b4c26fb190/test_coverage)](https://codeclimate.com/github/Didericis/itermproj/test_coverage)
 [![CircleCI](https://circleci.com/gh/Didericis/itermproj.svg?style=svg)](https://circleci.com/gh/Didericis/itermproj)
