@@ -6,38 +6,23 @@ const fs = require('fs');
 const os = require('os');
 
 const Parser = require('../../src/parser');
-const TemplateManager = require('../../src/template_manager');
+const Manager = require('../../src/manager');
 const UserActions = require('../../src/user_actions');
 
 describe('UserActions', () => {
-  // NB: templateManager cannot be lazy, since
-  //     we need to use a new instance before each test
-  let $templateManager;
   def('homedir', '/this/is/home');
   def('promptResults', {});
-  subject('userActions', () => UserActions.create($templateManager));
+  def('manager', () => $userActions.manager);
+  def('log', () => sinon.stub());
+  subject('userActions', () => new UserActions($log));
 
   beforeEach(() => {
     sinon.stub(inquirer, 'prompt').returns(Promise.resolve($promptResults));
-    $templateManager = sinon.createStubInstance(TemplateManager);
-    $templateManager.log = sinon.stub();
+    $userActions.manager = sinon.createStubInstance(Manager);
   });
 
   afterEach(() => {
     sinon.restore();
-  });
-
-  describe('#constructor', () => {
-    context('when not given a template manager', () => {
-      beforeEach(() => {
-        $templateManager = undefined;
-      });
-
-      it('creates a new template manager', () => {
-        $subject;
-        expect($subject.templateManager).to.be.instanceof(TemplateManager);
-      });
-    });
   });
 
   describe('#createTemplate()', () => {
@@ -61,11 +46,11 @@ describe('UserActions', () => {
     context('when given a name', () => {
       def('name', 'stuff');
 
-      context('and the template exists', () => {
+      context('and the template templateExists', () => {
         def('overwrite', true);
         beforeEach(() => {
           inquirer.prompt.returns(Promise.resolve({ overwrite: $overwrite }));
-          $templateManager.exists.returns(true);
+          $manager.templateExists.returns(true);
         });
 
         it('asks for confirmation', () => $subject.then(() => {
@@ -78,14 +63,14 @@ describe('UserActions', () => {
         context('and the user confirms overwriting the template', () => {
           def('overwrite', true);
           it('copies the template', () => $subject.then(() => {
-            expect($templateManager.copyToLocal.calledWith($name)).to.be.true;
+            expect($manager.copyTemplateToLocalConfig.calledWith($name)).to.be.true;
           }));
         });
 
         context('and the user does not confirm overwriting the template', () => {
           def('overwrite', false);
           it('does not copy the template', () => $subject.then(() => {
-            expect($templateManager.copyToLocal.called).to.be.false;
+            expect($manager.copyTemplateToLocalConfig.called).to.be.false;
           }));
         });
       });
@@ -98,7 +83,7 @@ describe('UserActions', () => {
 
     context('when the template does not exist', () => {
       beforeEach(() => {
-        $templateManager.exists.returns(false);
+        $manager.templateExists.returns(false);
       });
 
       it('does not prompt the user for anything', () => $subject.then(() => {
@@ -106,10 +91,10 @@ describe('UserActions', () => {
       }));
     });
 
-    context('when the template exists', () => {
+    context('when the template templateExists', () => {
       def('del', false);
       beforeEach(() => {
-        $templateManager.exists.returns(true);
+        $manager.templateExists.returns(true);
         inquirer.prompt.returns(Promise.resolve({ del: $del }));
       });
 
@@ -125,7 +110,7 @@ describe('UserActions', () => {
         def('del', true);
 
         it('deletes the template', () => $subject.then(() => {
-          expect($templateManager.delete.calledWith($name)).to.be.true;
+          expect($manager.deleteTemplate.calledWith($name)).to.be.true;
         }));
       });
 
@@ -133,7 +118,7 @@ describe('UserActions', () => {
         def('del', false);
 
         it('deletes the template', () => $subject.then(() => {
-          expect($templateManager.delete.called).to.be.false;
+          expect($manager.deleteTemplate.called).to.be.false;
         }));
       });
     });
@@ -146,11 +131,11 @@ describe('UserActions', () => {
       def('templates', ['asdf', 'asdf']);
 
       beforeEach(() => {
-        $templateManager.getAll.returns(Promise.resolve($templates));
+        $manager.getAllTemplates.returns(Promise.resolve($templates));
       });
 
       it('gets all templates', () => $subject.then(() => {
-        expect($templateManager.getAll.called).to.be.true;
+        expect($manager.getAllTemplates.called).to.be.true;
       }));
 
       it('prompts the user for templates and actions', () => $subject.then(() => {
@@ -237,7 +222,7 @@ describe('UserActions', () => {
         def('config', {});
 
         beforeEach(() => {
-          $templateManager.loadLocalConfig.returns(Promise.resolve($config));
+          $manager.loadLocalConfig.returns(Promise.resolve($config));
         });
 
         it('parses the config and executes the result', () => $subject.then(() => {
@@ -276,7 +261,7 @@ describe('UserActions', () => {
         def('loadErr', new Error('Bad load'));
 
         beforeEach(() => {
-          $templateManager.loadLocalConfig.returns(Promise.reject($loadErr));
+          $manager.loadLocalConfig.returns(Promise.reject($loadErr));
         });
 
         it('rejects the config error', () => $subject.then(() => {
@@ -292,7 +277,7 @@ describe('UserActions', () => {
 
       context('and a local config does not exist', () => {
         beforeEach(() => {
-          $templateManager.localConfigExists.returns(false);
+          $manager.localConfigExists.returns(false);
         });
 
         it('lists the templates', () => $subject.then(() => {
@@ -300,9 +285,9 @@ describe('UserActions', () => {
         }));
       });
 
-      context('and a local config exists', () => {
+      context('and a local config templateExists', () => {
         beforeEach(() => {
-          $templateManager.localConfigExists.returns(true);
+          $manager.localConfigExists.returns(true);
         });
 
         itBehavesLikeAConfigRunner();
@@ -323,7 +308,7 @@ describe('UserActions', () => {
     subject('saveTemplate', () => $userActions.saveTemplate($name));
 
     beforeEach(() => {
-      $templateManager.localConfigExists.returns($localConfigExists);
+      $manager.localConfigExists.returns($localConfigExists);
       inquirer.prompt.returns(Promise.resolve({ overwrite: $overwrite }));
     });
 
@@ -331,7 +316,7 @@ describe('UserActions', () => {
       def('localConfigExists', false);
 
       it('copies the template', () => $subject.then(() => {
-        expect($templateManager.copyToLocal.calledWith($name)).to.be.true;
+        expect($manager.copyTemplateToLocalConfig.calledWith($name)).to.be.true;
       }));
     });
 
@@ -350,7 +335,7 @@ describe('UserActions', () => {
         def('overwrite', true);
 
         it('copies the template', () => $subject.then(() => {
-          expect($templateManager.copyToLocal.calledWith($name)).to.be.true;
+          expect($manager.copyTemplateToLocalConfig.calledWith($name)).to.be.true;
         }));
       });
 
@@ -358,8 +343,26 @@ describe('UserActions', () => {
         def('overwrite', false);
 
         it('does not copy the template', () => $subject.then(() => {
-          expect($templateManager.copyToLocal.called).to.be.false;
+          expect($manager.copyTemplateToLocalConfig.called).to.be.false;
         }));
+      });
+    });
+  });
+
+  describe('#log()', () => {
+    context('when a logger is given', () => {
+      def('log', () => sinon.stub());
+
+      it('uses the given logger', () => {
+        expect($subject.log).to.equal($log);
+      });
+    });
+
+    context('when no logger is given', () => {
+      def('log', () => undefined);
+
+      it('uses console.log', () => {
+        expect($subject.log).to.equal(console.log);
       });
     });
   });

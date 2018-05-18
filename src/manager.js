@@ -2,39 +2,39 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 
-class TemplateManager {
+class Manager {
   constructor(log = console.log) {
     this.log = log;
     this.localConfigPath = path.resolve('itermproj.json');
-    this.dir = path.resolve(os.homedir(), '.itermproj')
+    this.templateDir = path.resolve(os.homedir(), '.itermproj')
   }
 
   copy(src, dest) {
     return fs.createReadStream(src).pipe(fs.createWriteStream(dest));
   }
 
-  copyToLocal(name) {
-    this.copy(this.getPath(name), this.localConfigPath);
+  copyTemplateToLocalConfig(name) {
+    this.copy(this.getTemplatePath(name), this.localConfigPath);
     this.log(`'${name}' saved to ./itermproj.json`);
   }
 
-  createFromLocal(name) {
-    this.copy(this.localConfigPath, this.getPath(name));
+  createTemplateFromLocalConfig(name) {
+    this.copy(this.localConfigPath, this.getTemplatePath(name));
     this.log('Template created!');
   }
 
-  delete(name) {
-    fs.unlinkSync(this.getPath(name));
+  deleteTemplate(name) {
+    fs.unlinkSync(this.getTemplatePath(name));
     this.log('Template deleted!');
   }
 
-  exists(name) {
-   return fs.existsSync(this.getPath(name));
+  templateExists(name) {
+   return fs.existsSync(this.getTemplatePath(name));
   }
 
-  getAll() {
+  getAllTemplates() {
     return new Promise((resolve, reject) => {
-      fs.readdir(this.dir, (err, files) => {
+      fs.readdir(this.templateDir, (err, files) => {
         if (err) reject(err);
         else resolve(
           files
@@ -45,8 +45,8 @@ class TemplateManager {
     });
   }
   
-  getPath(name) {
-    return path.resolve(this.dir, `${name}.json`);
+  getTemplatePath(name) {
+    return path.resolve(this.templateDir, `${name}.json`);
   }
 
   loadLocalConfig() {
@@ -66,9 +66,10 @@ class TemplateManager {
       });
     });
   }
+
   localConfigExists() {
     return fs.existsSync(this.localConfigPath);
   }
 };
 
-module.exports = TemplateManager;
+module.exports = Manager;

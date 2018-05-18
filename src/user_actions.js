@@ -5,11 +5,12 @@ const path = require('path');
 const inquirer = require('inquirer');
 
 const Parser = require('../src/parser');
-const TemplateManager = require('../src/template_manager');
+const Manager = require('../src/manager');
 
 class UserActions {
-  constructor(templateManager = new TemplateManager()) {
-    this.templateManager = templateManager;
+  constructor(log = console.log) {
+    this.log = log;
+    this.manager = new Manager(log);
   }
 
   createTemplate(name) {
@@ -21,21 +22,21 @@ class UserActions {
         name: 'template'
       }]).then(({ template }) => template)
     ).then(template => {
-      if (!this.templateManager.exists(template)) return template;
+      if (!this.manager.templateExists(template)) return template;
       return inquirer.prompt([{
         type: 'confirm',
-        message: 'A template by that already exists. Overwrite?',
+        message: 'A template by that already templateExists. Overwrite?',
         name: 'overwrite'
       }]).then(({ overwrite }) => overwrite ? template : null);
     }).then(template => {
       if (!template) return;
-      this.templateManager.copyToLocal(template);
+      this.manager.copyTemplateToLocalConfig(template);
     });
   }
 
   deleteTemplate(name) {
-    if (!this.templateManager.exists(name)) {
-      this.templateManager.log(`No template named '${name}' exists!`);
+    if (!this.manager.templateExists(name)) {
+      this.log(`No template named '${name}' exists!`);
       return Promise.resolve();
     }
     return inquirer.prompt([{
@@ -44,12 +45,12 @@ class UserActions {
       name: 'del'
     }]).then(({ del }) => {
       if (!del) return;
-      this.templateManager.delete(name)
+      this.manager.deleteTemplate(name)
     });
   }
 
   listTemplates() {
-    return this.templateManager.getAll().then(templates => {
+    return this.manager.getAllTemplates().then(templates => {
       return inquirer.prompt([{
         type: 'list',
         name: 'template',
@@ -76,11 +77,11 @@ class UserActions {
   }
 
   run(name) {
-    if (!name && !this.templateManager.localConfigExists()) {
+    if (!name && !this.manager.localConfigExists()) {
       return this.listTemplates();
     } else {
-      return this.templateManager.loadLocalConfig(
-        name ? this.templateManager.getPath(name) : undefined).then(conf => {
+      return this.manager.loadLocalConfig(
+        name ? this.manager.getTemplatePath(name) : undefined).then(conf => {
         applescript.execString(Parser.parse(conf), (err) => {
           if (err) throw (err);
         });
@@ -89,7 +90,7 @@ class UserActions {
   }
 
   saveTemplate(name) {
-    return (this.templateManager.localConfigExists() ?
+    return (this.manager.localConfigExists() ?
       inquirer.prompt([{
         type: 'confirm',
         message: 'Overwrite existing itermproj.json?',
@@ -97,13 +98,9 @@ class UserActions {
       }]).then(({ overwrite }) => overwrite) : Promise.resolve(true)
     ).then(save => {
       if (!save) return;
-      this.templateManager.copyToLocal(name);
+      this.manager.copyTemplateToLocalConfig(name);
     });
   }
-}
-
-UserActions.create = function create() {
-  return new UserActions(...arguments);
 }
 
 module.exports = UserActions;

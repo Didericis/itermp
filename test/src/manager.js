@@ -3,12 +3,12 @@ const sinon = require('sinon');
 const fs = require('fs');
 const os = require('os');
 
-const TemplateManager = require('../../src/template_manager');
+const Manager = require('../../src/manager');
 
-describe('TemplateManager', () => {
+describe('Manager', () => {
   def('log', () => sinon.stub());
 
-  subject('templateManager', () => new TemplateManager($log));
+  subject('manager', () => new Manager($log));
 
   afterEach(() => {
     sinon.restore();
@@ -17,7 +17,7 @@ describe('TemplateManager', () => {
   describe('#localConfigPath', () => {
     def('cwd', '/my/current/dir');
 
-    subject(() => $templateManager.localConfigPath);
+    subject(() => $manager.localConfigPath);
 
     beforeEach(() => {
       sinon.stub(process, 'cwd').returns($cwd);
@@ -34,7 +34,7 @@ describe('TemplateManager', () => {
     def('readStream', { pipe: sinon.stub() });
     def('writeStream', { pipe: sinon.stub() });
 
-    subject(() => $templateManager.copy($src, $dest));
+    subject(() => $manager.copy($src, $dest));
 
     beforeEach(() => {
       sinon.stub(fs, 'createReadStream').returns($readStream);
@@ -49,68 +49,68 @@ describe('TemplateManager', () => {
     });
   });
 
-  describe('#copyToLocal()', () => {
+  describe('#copyTemplateToLocalConfig()', () => {
     def('name', 'asdf');
     def('templatePath', '/template/asdf.json');
 
-    subject(() => $templateManager.copyToLocal($name));
+    subject(() => $manager.copyTemplateToLocalConfig($name));
 
     beforeEach(() => {
-      sinon.stub($templateManager, 'getPath').returns($templatePath);
-      sinon.stub($templateManager, 'copy');
+      sinon.stub($manager, 'getTemplatePath').returns($templatePath);
+      sinon.stub($manager, 'copy');
     });
 
     it('copies the template to the local config', () => {
       $subject;
-      expect($templateManager.getPath.calledWith($name)).to.be.true;
-      expect($templateManager.copy.calledWith(
+      expect($manager.getTemplatePath.calledWith($name)).to.be.true;
+      expect($manager.copy.calledWith(
         $templatePath,
-        $templateManager.localConfigPath
+        $manager.localConfigPath
       )).to.be.true;
     });
    
     it('emits the correct log', () => {
       $subject;
       expect(
-        $templateManager.log.calledWith("'asdf' saved to ./itermproj.json")
+        $manager.log.calledWith("'asdf' saved to ./itermproj.json")
       ).to.be.true;
     });
   });
 
-  describe('#createFromLocal()', () => {
+  describe('#createTemplateFromLocalConfig()', () => {
     def('name', 'asdf');
     def('templatePath', '/template/asdf.json');
 
-    subject(() => $templateManager.createFromLocal($name));
+    subject(() => $manager.createTemplateFromLocalConfig($name));
 
     beforeEach(() => {
-      sinon.stub($templateManager, 'getPath').returns($templatePath);
-      sinon.stub($templateManager, 'copy');
+      sinon.stub($manager, 'getTemplatePath').returns($templatePath);
+      sinon.stub($manager, 'copy');
     });
 
     it('copies the local config to the template', () => {
       $subject;
-      expect($templateManager.getPath.calledWith($name)).to.be.true;
-      expect($templateManager.copy.calledWith(
-        $templateManager.localConfigPath,
+      expect($manager.getTemplatePath.calledWith($name)).to.be.true;
+      expect($manager.copy.calledWith(
+        $manager.localConfigPath,
         $templatePath,
       )).to.be.true;
     });
 
     it('emits the correct log', () => {
       $subject;
-      expect($templateManager.log.calledWith('Template created!')).to.be.true;
+      expect($manager.log.calledWith('Template created!')).to.be.true;
     });
   });
 
-  describe('#delete()', () => {
+  describe('#deleteTemplate()', () => {
     def('name', 'asdf');
     def('templatePath', '/template/asdf.json');
 
-    subject(() => $templateManager.delete($name));
+    subject(() => $manager.deleteTemplate($name));
 
     beforeEach(() => {
-      sinon.stub($templateManager, 'getPath').returns($templatePath);
+      sinon.stub($manager, 'getTemplatePath').returns($templatePath);
       sinon.stub(fs, 'unlinkSync');
     });
 
@@ -121,14 +121,14 @@ describe('TemplateManager', () => {
 
     it('emits the correct log', () => {
       $subject;
-      expect($templateManager.log.calledWith('Template deleted!')).to.be.true;
+      expect($manager.log.calledWith('Template deleted!')).to.be.true;
     });
   });
 
-  describe('#dir', () => {
+  describe('#templateDir', () => {
     def('homedir', '/this/is/home');
 
-    subject(() => $templateManager.dir);
+    subject(() => $manager.templateDir);
 
     beforeEach(() => {
       sinon.stub(os, 'homedir').returns($homedir);
@@ -139,26 +139,26 @@ describe('TemplateManager', () => {
     });
   });
 
-  describe('#exists()', () => {
+  describe('#templateExists()', () => {
     def('name', 'my-cool-template');
     def('path', () => `/cool-template/path/${$name}.json`);
 
-    subject(() => $templateManager.exists($name));
+    subject(() => $manager.templateExists($name));
 
     beforeEach(() => {
       sinon.stub(fs, 'existsSync');
-      sinon.stub($templateManager, 'getPath').returns($path);
+      sinon.stub($manager, 'getTemplatePath').returns($path);
     });
 
-    it('checks if the template exists', () => {
+    it('checks if the template templateExists', () => {
       $subject;
-      expect($templateManager.getPath.calledWith($name)).to.be.true;
+      expect($manager.getTemplatePath.calledWith($name)).to.be.true;
       expect(fs.existsSync.calledWith($path)).to.be.true;
     });
   });
 
-  describe('#getAll()', () => {
-    subject(() => $templateManager.getAll());
+  describe('#getAllTemplates()', () => {
+    subject(() => $manager.getAllTemplates());
 
     beforeEach(() => {
       sinon.stub(fs, 'readdir');
@@ -193,18 +193,18 @@ describe('TemplateManager', () => {
     });
   });
 
-  describe('#getPath()', () => {
+  describe('#getTemplatePath()', () => {
     def('name', 'cool-name');
 
-    subject(() => $templateManager.getPath($name));
+    subject(() => $manager.getTemplatePath($name));
 
     it('returns the correct path', () => {
-      expect($subject).to.eql(`${$templateManager.dir}/${$name}.json`);
+      expect($subject).to.eql(`${$manager.templateDir}/${$name}.json`);
     });
   });
 
   describe('#localConfigExists()', () => {
-    subject(() => $templateManager.localConfigExists());
+    subject(() => $manager.localConfigExists());
 
     beforeEach(() => {
       sinon.stub(fs, 'existsSync');
@@ -212,7 +212,7 @@ describe('TemplateManager', () => {
 
     it('performs the correct check', () => {
       $subject;
-      expect(fs.existsSync.calledWith($templateManager.localConfigPath)).to.be.true;
+      expect(fs.existsSync.calledWith($manager.localConfigPath)).to.be.true;
     });
   });
 
@@ -220,7 +220,7 @@ describe('TemplateManager', () => {
   describe('#loadLocalConfig()', () => {
     def('cwd', '/cool/place');
     def('fileContents', '{}');
-    subject(() => $templateManager.loadLocalConfig());
+    subject(() => $manager.loadLocalConfig());
 
     beforeEach(() => {
       sinon.stub(process, 'cwd').returns($cwd);
@@ -232,7 +232,7 @@ describe('TemplateManager', () => {
       expect(fs.readFile.args[0][0]).to.eql(`${$cwd}/itermproj.json`);
     }));
 
-    context('when the file exists', () => {
+    context('when the file templateExists', () => {
       beforeEach(() => {
         sinon.stub(console, 'error');
       });
@@ -279,15 +279,15 @@ describe('TemplateManager', () => {
       def('log', () => sinon.stub());
 
       it('uses the given logger', () => {
-        expect($templateManager.log).to.equal($log);
+        expect($manager.log).to.equal($log);
       });
     });
 
     context('when no logger is given', () => {
       def('log', () => undefined);
 
-      it('uses the console.log', () => {
-        expect($templateManager.log).to.equal(console.log);
+      it('uses console.log', () => {
+        expect($manager.log).to.equal(console.log);
       });
     });
   });
