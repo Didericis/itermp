@@ -1,7 +1,7 @@
 {
   "name": "itermp",
   "version": "1.0.2",
-  "description": "",
+  "description": "Create pane layouts and run commands in iTerm",
   "dependencies": {
     "applescript": "^1.0.0",
     "inquirer": "^5.2.0",
