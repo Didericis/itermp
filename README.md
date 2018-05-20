@@ -98,4 +98,4 @@ Options:
 
 ### License
 
-[MIT license](LICENSE) © Eric Bauerfeld
+[MIT license](LICENSE.md) © Eric Bauerfeld
