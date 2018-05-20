@@ -95,3 +95,7 @@ Options:
   -s, --save     Save pane configuration to local itermproj.json
   -v, --version  Show version number                                   [boolean]
 ```
+
+### License
+
+[MIT license](LICENSE) © Eric Bauerfeld
