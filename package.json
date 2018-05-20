@@ -39,5 +39,5 @@
     "test": "nyc --reporter=lcov mocha -u bdd-lazy-var/global test/**/*.js"
   },
   "author": "didericis",
-  "license": "ISC"
+  "license": "MIT"
 }
