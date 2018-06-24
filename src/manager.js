@@ -28,6 +28,11 @@ class Manager {
     this.log(`Template '${name}' deleted!`);
   }
 
+  initLocalConfig() {
+    fs.writeFileSync(this.localConfigPath, '{}');
+    this.log('./itermp.json initialized');
+  }
+
   templateExists(name) {
    return fs.existsSync(this.getTemplatePath(name));
   }

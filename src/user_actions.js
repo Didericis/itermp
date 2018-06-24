@@ -13,7 +13,7 @@ class UserActions {
     this.debug = options.debug;
   }
 
-  createTemplate(name) {
+  createGlobalTemplate(name) {
     if (!this.manager.localConfigExists()) {
       console.error('No local config exists!');
       return Promise.resolve();
@@ -38,17 +38,17 @@ class UserActions {
     });
   }
 
-  deleteTemplate(name) {
+  removeTemplate(name) {
     if (!this.manager.templateExists(name)) {
       console.error(`No template named '${name}' exists!`);
       return Promise.resolve();
     }
     return inquirer.prompt([{
       type: 'confirm',
-      message: `Delete the '${name}' template?`,
-      name: 'del'
-    }]).then(({ del }) => {
-      if (!del) return;
+      message: `Remove the '${name}' template?`,
+      name: 'remove'
+    }]).then(({ remove }) => {
+      if (!remove) return;
       this.manager.deleteTemplate(name)
     });
   }
@@ -65,22 +65,22 @@ class UserActions {
         name: 'action',
         message: 'What do you want to do?:',
         choices: [
-          { key: 'd', name: 'delete' }, 
-          { key: 'r', name: 'run' }, 
-          { key: 's', name: 'save' }, 
+          { key: 'r', name: 'remove' }, 
+          { key: 'e', name: 'execute' }, 
+          { key: 'i', name: 'init' }, 
         ]
       }]).then(({ template, action }) => {
         switch (action) {
-          case 'delete': return this.deleteTemplate(template);
-          case 'run': return this.run(template);
-          case 'save': return this.saveTemplate(template);
+          case 'remove': return this.removeTemplate(template);
+          case 'execute': return this.execute(template);
+          case 'init': return this.initTemplate(template);
           default: return;
         }
       })
     });
   }
 
-  run(name) {
+  execute(name) {
     if (!name && !this.manager.localConfigExists()) {
       return this.listTemplates();
     } else {
@@ -98,8 +98,8 @@ class UserActions {
     }
   }
 
-  saveTemplate(name) {
-    if (!this.manager.templateExists(name)) {
+  initTemplate(name) {
+    if (name && !this.manager.templateExists(name)) {
       console.error(`Template '${name}' does not exist!`);
       return Promise.resolve();
     } 
@@ -111,7 +111,8 @@ class UserActions {
       }]).then(({ overwrite }) => overwrite) : Promise.resolve(true)
     ).then(save => {
       if (!save) return;
-      this.manager.copyTemplateToLocalConfig(name);
+      if (name) this.manager.copyTemplateToLocalConfig(name);
+      else this.manager.initLocalConfig();
     });
   }
 }

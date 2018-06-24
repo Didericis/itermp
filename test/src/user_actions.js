@@ -26,9 +26,9 @@ describe('UserActions', () => {
     sinon.restore();
   });
 
-  describe('#createTemplate()', () => {
+  describe('#createGlobalTemplate()', () => {
     def('localConfigExists', true);
-    subject(() => $userActions.createTemplate($name));
+    subject(() => $userActions.createGlobalTemplate($name));
 
     beforeEach(() => {
       $manager.localConfigExists.returns($localConfigExists);
@@ -91,9 +91,9 @@ describe('UserActions', () => {
     });
   });
 
-  describe('#deleteTemplate()', () => {
+  describe('#removeTemplate()', () => {
     def('name', 'asdf');
-    subject(() => $userActions.deleteTemplate($name));
+    subject(() => $userActions.removeTemplate($name));
 
     context('when the template does not exist', () => {
       beforeEach(() => {
@@ -106,32 +106,32 @@ describe('UserActions', () => {
     });
 
     context('when the template exists', () => {
-      def('del', false);
+      def('remove', false);
       beforeEach(() => {
         $manager.templateExists.returns(true);
-        inquirer.prompt.returns(Promise.resolve({ del: $del }));
+        inquirer.prompt.returns(Promise.resolve({ remove: $remove }));
       });
 
       it('prompts the user for confirmation', () => $subject.then(() => {
         expect(inquirer.prompt.called).to.be.true;
         expect(inquirer.prompt.args[0][0][0]).to.include({
           type: 'confirm',
-          name: 'del'
+          name: 'remove'
         });
       }));
 
-      context('and the user confirms deleting the template', () => {
-        def('del', true);
+      context('and the user confirms removing the template', () => {
+        def('remove', true);
 
-        it('deletes the template', () => $subject.then(() => {
+        it('removes the template', () => $subject.then(() => {
           expect($manager.deleteTemplate.calledWith($name)).to.be.true;
         }));
       });
 
       context('and the user does not confirm deleting the template', () => {
-        def('del', false);
+        def('remove', false);
 
-        it('deletes the template', () => $subject.then(() => {
+        it('removes the template', () => $subject.then(() => {
           expect($manager.deleteTemplate.called).to.be.false;
         }));
       });
@@ -165,65 +165,65 @@ describe('UserActions', () => {
         });
       }));
 
-      context('and the prompt action was delete', () => {
-        def('deleteTemplateResult', 'delete-result');
+      context('and the prompt action was remove', () => {
+        def('removeTemplateResult', 'remove-result');
         def('promptResults', {
-          action: 'delete',
+          action: 'remove',
           template: 'my-template',
         });
 
         beforeEach(() => {
-          sinon.stub($userActions, 'deleteTemplate').returns(Promise.resolve($deleteTemplateResult));
+          sinon.stub($userActions, 'removeTemplate').returns(Promise.resolve($removeTemplateResult));
         });
         
-        it('calls deleteTemplate and returns the result', () => $subject.then((result) => {
-          expect($userActions.deleteTemplate.calledWith('my-template')).to.be.true;
-          expect(result).to.eql($deleteTemplateResult);
+        it('calls removeTemplate and returns the result', () => $subject.then((result) => {
+          expect($userActions.removeTemplate.calledWith('my-template')).to.be.true;
+          expect(result).to.eql($removeTemplateResult);
         }));
       });
 
-      context('and the prompt action was run', () => {
-        def('runResult', 'run-result');
+      context('and the prompt action was execute', () => {
+        def('executeResult', 'execute-result');
         def('promptResults', {
-          action: 'run',
+          action: 'execute',
           template: 'my-template',
         });
 
         beforeEach(() => {
-          sinon.stub($userActions, 'run').returns(Promise.resolve($runResult));
+          sinon.stub($userActions, 'execute').returns(Promise.resolve($executeResult));
         });
         
-        it('calls run and returns the result', () => $subject.then((result) => {
-          expect($userActions.run.calledWith('my-template')).to.be.true;
-          expect(result).to.eql($runResult);
+        it('calls execute and returns the result', () => $subject.then((result) => {
+          expect($userActions.execute.calledWith('my-template')).to.be.true;
+          expect(result).to.eql($executeResult);
         }));
       });
 
       context('and the prompt action was save', () => {
-        def('saveTemplateResult', 'save-result');
+        def('initTemplateResult', 'init-result');
         def('promptResults', {
-          action: 'save',
+          action: 'init',
           template: 'my-template',
         });
 
         beforeEach(() => {
-          sinon.stub($userActions, 'saveTemplate').returns(Promise.resolve($saveTemplateResult));
+          sinon.stub($userActions, 'initTemplate').returns(Promise.resolve($initTemplateResult));
         });
         
         it('calls saveTemplate and returns the result', () => $subject.then((result) => {
-          expect($userActions.saveTemplate.calledWith('my-template')).to.be.true;
-          expect(result).to.eql($saveTemplateResult);
+          expect($userActions.initTemplate.calledWith('my-template')).to.be.true;
+          expect(result).to.eql($initTemplateResult);
         }));
       });
     });
   });
 
-  describe('#run()', () => {
+  describe('#execute()', () => {
     def('parsedConfig', {});
     def('name', 'asdf');
     def('listTemplatesPromise', () => Promise.resolve());
 
-    subject(() => $userActions.run($name));
+    subject(() => $userActions.execute($name));
 
     beforeEach(() => {
       sinon.stub(Parser, 'parse').returns($parsedConfig);
@@ -325,12 +325,12 @@ describe('UserActions', () => {
     });
   });
 
-  describe('#saveTemplate()', () => {
+  describe('#initTemplate()', () => {
     def('localConfigExists', false);
     def('name', 'asdf');
     def('templateExists', true);
 
-    subject('saveTemplate', () => $userActions.saveTemplate($name));
+    subject(() => $userActions.initTemplate($name));
 
     beforeEach(() => {
       $manager.localConfigExists.returns($localConfigExists);
@@ -344,6 +344,14 @@ describe('UserActions', () => {
       it('copies the template', () => $subject.then(() => {
         expect($manager.copyTemplateToLocalConfig.calledWith($name)).to.be.true;
       }));
+
+      context('and no name is given', () => {
+        def('name', undefined);
+
+        it('initializes a local config', () => $subject.then(() => {
+          expect($manager.initLocalConfig.called).to.be.true;
+        }));
+      });
     });
 
     context('when there is a local config', () => {

@@ -49,6 +49,19 @@ describe('Manager', () => {
     });
   });
 
+  describe('#initLocalConfig()', () => {
+    subject(() => $manager.initLocalConfig($name));
+
+    beforeEach(() => {
+      sinon.stub(fs, 'writeFileSync').returns($templatePath);
+    });
+
+    it('creates a blank local config', () => {
+      $subject;
+      expect(fs.writeFileSync.calledWith($manager.localConfigPath, '{}')).to.be.true;
+    });
+  });
+
   describe('#copyTemplateToLocalConfig()', () => {
     def('name', 'asdf');
     def('templatePath', '/template/asdf.json');
