@@ -7,7 +7,6 @@ const yargs = require('yargs');
 const UserActions = require('../src/user_actions');
 const Manager = require('../src/manager');
 
-const userActions = new UserActions();
 const manager = new Manager();
 
 const argv = yargs
@@ -23,6 +22,7 @@ const argv = yargs
   })
   .command('help', 'show help')
   .command('$0 [template]', 'run itermproj', () => {}, (argv) => {
+    const userActions = new UserActions({ debug: argv.debug });
     if (argv.remove) {
       userActions.deleteTemplate(argv.remove);
     } else if (argv.create) {

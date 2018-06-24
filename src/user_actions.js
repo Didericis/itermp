@@ -8,8 +8,9 @@ const Parser = require('../src/parser');
 const Manager = require('../src/manager');
 
 class UserActions {
-  constructor(log) {
-    this.manager = new Manager(log);
+  constructor(options = {}) {
+    this.manager = new Manager(options.log);
+    this.debug = options.debug;
   }
 
   createTemplate(name) {
@@ -84,7 +85,13 @@ class UserActions {
       return this.listTemplates();
     } else {
       return this.manager.loadConfig(name).then(conf => {
-        applescript.execString(Parser.parse(conf), (err) => {
+        const scriptString = Parser.parse(conf);
+        if (this.debug) {
+          console.log('==== AppleScript ===')
+          console.log(scriptString);
+          console.log('==== End AppleScript ===')
+        }
+        applescript.execString(scriptString, (err) => {
           if (err) throw (err);
         });
       });
