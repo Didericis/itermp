@@ -21,6 +21,7 @@ const argv = yargs
     return manager.getAllTemplates().then(templates => templates.concat(['completion', 'help']));
   })
   .command('help', 'show help')
+  .strict()
   .command('$0 [template]', 'run itermproj', () => {}, (argv) => {
     const userActions = new UserActions({ debug: argv.debug });
     if (argv.remove) {
