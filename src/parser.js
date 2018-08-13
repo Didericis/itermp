@@ -31,7 +31,7 @@ const profile = (p) => p ? `profile "${p}"` : 'default profile'
 const parse = (obj) => `set dircommand to "cd ${process.cwd()}"
 
 ${indent([
-  'tell application "iTerm"',
+  'tell application "iTerm2"',
   [
     'activate',
     `create window with ${profile(obj.profile)}`,

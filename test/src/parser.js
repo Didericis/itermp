@@ -39,7 +39,7 @@ describe('Parser', () => {
 
     it('creates the correct string', () => {
       expect($parse).to.include(`
-tell application "iTerm"
+tell application "iTerm2"
   activate
   create window with profile "Perdy"
   tell current session of current window
@@ -79,7 +79,7 @@ end tell`
       def('obj', {});
       it('uses the correct defaults', () => {
         expect($parse).to.include(`
-tell application "iTerm"
+tell application "iTerm2"
   activate
   create window with default profile
   tell current session of current window
