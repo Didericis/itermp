@@ -18,6 +18,7 @@ Use the `-d` or `--debug` flag and paste any error output here
  - node version (`node --version`)
  - applescripts version (`osascript -e "display dialog \"You're running AppleScript \" & version of AppleScript"`)
  - bash version (`bash --version`)
+ - iTerm2 build number (open iTerm2, click "iTerm2 -> About iTerm2")
 
 **Additional context**
 Add any other context about the problem here.
