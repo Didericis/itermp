@@ -1,7 +1,4 @@
 const applescript = require('applescript');
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
 const inquirer = require('inquirer');
 
 const Parser = require('../src/parser');
@@ -18,7 +15,7 @@ class UserActions {
       console.error('No local config exists!');
       return Promise.resolve();
     }
-    return (name ? 
+    return (name ?
       Promise.resolve(name) :
       inquirer.prompt([{
         type: 'input',
@@ -65,9 +62,9 @@ class UserActions {
         name: 'action',
         message: 'What do you want to do?:',
         choices: [
-          { key: 'r', name: 'remove' }, 
-          { key: 'e', name: 'execute' }, 
-          { key: 'i', name: 'init' }, 
+          { key: 'r', name: 'remove' },
+          { key: 'e', name: 'execute' },
+          { key: 'i', name: 'init' },
         ]
       }]).then(({ template, action }) => {
         switch (action) {
@@ -102,7 +99,7 @@ class UserActions {
     if (name && !this.manager.templateExists(name)) {
       console.error(`Template '${name}' does not exist!`);
       return Promise.resolve();
-    } 
+    }
     return (this.manager.localConfigExists() ?
       inquirer.prompt([{
         type: 'confirm',

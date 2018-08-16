@@ -49,7 +49,7 @@ class Manager {
       });
     });
   }
-  
+
   getTemplatePath(name) {
     return path.resolve(this.templateDir, `${name}.json`);
   }
@@ -89,6 +89,6 @@ class Manager {
   localConfigExists() {
     return fs.existsSync(this.localConfigPath);
   }
-};
+}
 
 module.exports = Manager;
